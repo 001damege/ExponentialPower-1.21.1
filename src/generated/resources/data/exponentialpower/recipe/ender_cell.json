@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "group": "exponentialpower",
+  "key": {
+    "D": {
+      "item": "minecraft:diamond_block"
+    },
+    "I": {
+      "item": "minecraft:ender_eye"
+    },
+    "P": {
+      "item": "minecraft:dark_prismarine"
+    },
+    "n": {
+      "item": "minecraft:netherite_ingot"
+    }
+  },
+  "pattern": [
+    "DPD",
+    "nIn",
+    "DPD"
+  ],
+  "result": {
+    "count": 1,
+    "id": "exponentialpower:ender_cell"
+  }
+}
