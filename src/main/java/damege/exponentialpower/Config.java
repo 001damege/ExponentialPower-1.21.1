@@ -3,26 +3,19 @@ package damege.exponentialpower;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
 public class Config {
-
     public static final String CATEGORY_ENDER_GENERATOR = "generator";
-
     public static final String SUBCATEGORY_ENDER_GENERATOR_REGULAR = "regular";
+    public static final String SUBCATEGORY_ENDER_GENERATOR_ADVANCED = "advanced";
+    public static final String CATEGORY_ENDER_STORAGE = "storage";
+    public static final String SUBCATEGORY_ENDER_STORAGE_REGULAR = "regular";
+    public static final String SUBCATEGORY_ENDER_STORAGE_ADVANCED = "advanced";
+
     public static ModConfigSpec.DoubleValue ENDER_GENERATOR_BASE;
     public static ModConfigSpec.IntValue ENDER_GENERATOR_MAX_STACK;
-
-    public static final String SUBCATEGORY_ENDER_GENERATOR_ADVANCED = "advanced";
     public static ModConfigSpec.DoubleValue ADV_ENDER_GENERATOR_BASE;
     public static ModConfigSpec.IntValue ADV_ENDER_GENERATOR_MAX_STACK;
-
-    public static final String CATEGORY_ENDER_STORAGE = "storage";
-
-    public static final String SUBCATEGORY_ENDER_STORAGE_REGULAR = "regular";
     public static ModConfigSpec.LongValue ENDER_STORAGE_MAX_ENERGY;
-
-    public static final String SUBCATEGORY_ENDER_STORAGE_ADVANCED = "advanced";
     public static ModConfigSpec.DoubleValue ADV_ENDER_STORAGE_MAX_ENERGY;
-
-
     public static ModConfigSpec SERVER_CONFIG;
 
     static {
@@ -65,5 +58,4 @@ public class Config {
 
         SERVER_CONFIG = BUILDER.build();
     }
-
 }

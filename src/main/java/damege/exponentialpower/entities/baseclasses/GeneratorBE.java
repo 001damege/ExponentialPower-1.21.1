@@ -30,17 +30,12 @@ import org.jetbrains.annotations.Nullable;
 public class GeneratorBE extends BaseContainerBlockEntity {
     @Getter
     private final Tier tier;
-
     public double curOutput = 0;
     public double energy = 0;
-
-    @Nullable
-    private BlockCapabilityCache<IEnergyStorage, Direction> cache;
-
     public NonNullList<ItemStack> inv = NonNullList.withSize(1, ItemStack.EMPTY);
 
     @Getter
-    private GeneratorConnection connection;
+    private final GeneratorConnection connection;
 
     public GeneratorBE(Tier tier, BlockPos pos, BlockState state) {
         super(tier == Tier.ADVANCED ? Registration.ADV_ENDER_GENERATOR_BE.get() : Registration.ENDER_GENERATOR_BE.get(), pos, state);
@@ -114,11 +109,12 @@ public class GeneratorBE extends BaseContainerBlockEntity {
 
     @Override
     protected @NotNull NonNullList<ItemStack> getItems() {
-        return NonNullList.of(ItemStack.EMPTY);
+        return this.inv;
     }
 
     @Override
     protected void setItems(@NotNull NonNullList<ItemStack> stacks) {
+        this.inv = stacks;
     }
 
     @Override
@@ -227,9 +223,9 @@ public class GeneratorBE extends BaseContainerBlockEntity {
             return 1L;
         }
         if (b == 1) {
-            return (long)a;
+            return (long) a;
         }
-        return (long)Math.pow(a, b);
+        return (long) Math.pow(a, b);
     }
 
     @Override

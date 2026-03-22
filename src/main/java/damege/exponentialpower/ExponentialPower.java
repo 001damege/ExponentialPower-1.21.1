@@ -18,12 +18,9 @@ public class ExponentialPower {
     public static final Logger LOGGER = LogManager.getLogger();
 
     public ExponentialPower(IEventBus eventBus, ModContainer container) {
-
         Registration.init(eventBus);
-
         eventBus.addListener(RegisterCapabilitiesEvent.class, this::registerCapabilities);
         eventBus.addListener(DataGenerators::gatherData);
-
         container.registerConfig(ModConfig.Type.SERVER, Config.SERVER_CONFIG);
     }
 

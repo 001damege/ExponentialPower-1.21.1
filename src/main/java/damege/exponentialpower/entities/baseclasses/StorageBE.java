@@ -14,13 +14,15 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.EnumMap;
+import java.util.Map;
+import java.util.Objects;
 
 public class StorageBE extends BlockEntity implements BlockEntityTicker<StorageBE> {
     @Getter
     private final Tier tier;
 
     public double energy = 0;
-    public EnumMap<Direction, Boolean> freezeExpand;
+    public Map<Direction, Boolean> freezeExpand;
 
     public StorageBE(Tier tier, BlockPos pos, BlockState state) {
         super(tier == Tier.ADVANCED ? Registration.ADV_ENDER_STORAGE_BE.get() : Registration.ENDER_STORAGE_BE.get(), pos, state);
@@ -31,14 +33,12 @@ public class StorageBE extends BlockEntity implements BlockEntityTicker<StorageB
     @Override
     protected void saveAdditional(@NotNull CompoundTag tag, HolderLookup.@NotNull Provider registries) {
         super.saveAdditional(tag, registries);
-
         tag.putDouble("energy", energy);
     }
 
     @Override
     protected void loadAdditional(@NotNull CompoundTag tag, HolderLookup.@NotNull Provider registries) {
         super.loadAdditional(tag, registries);
-
         energy = tag.getDouble("energy");
     }
 
@@ -50,7 +50,7 @@ public class StorageBE extends BlockEntity implements BlockEntityTicker<StorageB
     }
 
     private void handleSendingEnergy() {
-        if (!level.isClientSide()) {
+        if (!Objects.requireNonNull(level).isClientSide()) {
             if (energy <= 0) {
                 return;
             }
@@ -66,8 +66,7 @@ public class StorageBE extends BlockEntity implements BlockEntityTicker<StorageB
                 BlockPos targetPos = getBlockPos().relative(dir);
                 BlockEntity entity = level.getBlockEntity(targetPos);
                 if (entity != null) {
-                    if (entity instanceof StorageBE) {
-                        StorageBE storage = (StorageBE) entity;
+                    if (entity instanceof StorageBE storage) {
                         double dif = storage.acceptEnergy(energy);
                         energy -= dif;
                         if (dif > 0) {

@@ -19,6 +19,8 @@ import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
+
 public class EnderStorage extends Block implements EntityBlock {
     public EnderStorage(Properties p) {
         super(p
@@ -34,13 +36,13 @@ public class EnderStorage extends Block implements EntityBlock {
     }
 
     @Override
-    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+    protected @NotNull ItemInteractionResult useItemOn(@NotNull ItemStack stack, @NotNull BlockState state, Level level, @NotNull BlockPos pos, @NotNull Player player, @NotNull InteractionHand hand, @NotNull BlockHitResult hitResult) {
         if (level.isClientSide()) {
             return ItemInteractionResult.sidedSuccess(true);
         }
 
         StorageBE be = (StorageBE) level.getBlockEntity(pos);
-        double percent = ((int) (be.energy / be.getMaxEnergy() * 10000.00)) / 100.00;
+        double percent = ((int) (Objects.requireNonNull(be).energy / be.getMaxEnergy() * 10000.00)) / 100.00;
         player.sendSystemMessage(Component.translatable("screen.exponentialpower.storage_total", be.energy, be.getMaxEnergy(), percent));
         return ItemInteractionResult.SUCCESS;
     }
