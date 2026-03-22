@@ -2,8 +2,8 @@ package damege.exponentialpower.entities.baseclasses;
 
 import damege.exponentialpower.Config;
 import damege.exponentialpower.ExponentialPower;
+import damege.exponentialpower.energy.GeneratorConnection;
 import damege.exponentialpower.items.EnderCell;
-import damege.exponentialpower.menu.ContainerEnderGeneratorBE;
 import damege.exponentialpower.setup.Registration;
 import lombok.Getter;
 import net.minecraft.core.BlockPos;
@@ -14,7 +14,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -24,7 +23,6 @@ import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
-import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.energy.IEnergyStorage;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -41,9 +39,13 @@ public class GeneratorBE extends BaseContainerBlockEntity {
 
     public NonNullList<ItemStack> inv = NonNullList.withSize(1, ItemStack.EMPTY);
 
+    @Getter
+    private GeneratorConnection connection;
+
     public GeneratorBE(Tier tier, BlockPos pos, BlockState state) {
         super(tier == Tier.ADVANCED ? Registration.ADV_ENDER_GENERATOR_BE.get() : Registration.ENDER_GENERATOR_BE.get(), pos, state);
         this.tier = tier;
+        connection = new GeneratorConnection(this, true, false);
     }
 
     @Override
@@ -111,7 +113,7 @@ public class GeneratorBE extends BaseContainerBlockEntity {
     }
 
     @Override
-    protected NonNullList<ItemStack> getItems() {
+    protected @NotNull NonNullList<ItemStack> getItems() {
         return NonNullList.of(ItemStack.EMPTY);
     }
 
@@ -120,24 +122,12 @@ public class GeneratorBE extends BaseContainerBlockEntity {
     }
 
     @Override
-    protected @NotNull AbstractContainerMenu createMenu(int containerId, @NotNull Inventory playerInv) {
-        return new ContainerEnderGeneratorBE(containerId, playerInv, this);
-    }
-
-    @Nullable
-    public IEnergyStorage getStorage() {
-        if (this.level instanceof ServerLevel serverLevel) {
-            if (cache == null) {
-                cache = BlockCapabilityCache.create(Capabilities.EnergyStorage.BLOCK, serverLevel, getBlockPos(), null);
-            }
-            return cache.getCapability();
-        } else {
-            assert level != null;
-            return level.getCapability(Capabilities.EnergyStorage.BLOCK, getBlockPos(), null);
-        }
+    protected AbstractContainerMenu createMenu(int containerId, @NotNull Inventory playerInv) {
+        return null;
     }
 
     private void handleSendingEnergy() {
+        assert level != null;
         if (!level.isClientSide()) {
             if (energy <= 0) {
                 return;

@@ -9,7 +9,12 @@ version = mod_version
 group = mod_group_id
 
 repositories {
-    mavenLocal()
+    maven {
+        url "https://cursemaven.com"
+        content {
+            includeGroup "curse.maven"
+        }
+    }
 }
 
 base {
@@ -62,6 +67,8 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 dependencies {
     compileOnly 'org.projectlombok:lombok:1.18.34'
     annotationProcessor 'org.projectlombok:lombok:1.18.34'
+
+    runtimeOnly "curse.maven:jade-324717:7545219"
 }
 
 var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {
