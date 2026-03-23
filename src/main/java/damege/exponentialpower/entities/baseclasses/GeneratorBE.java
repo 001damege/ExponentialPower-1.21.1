@@ -1,7 +1,6 @@
 package damege.exponentialpower.entities.baseclasses;
 
 import damege.exponentialpower.Config;
-import damege.exponentialpower.ExponentialPower;
 import damege.exponentialpower.energy.GeneratorConnection;
 import damege.exponentialpower.items.EnderCell;
 import damege.exponentialpower.setup.Registration;
@@ -11,8 +10,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -22,17 +19,26 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
-import net.neoforged.neoforge.energy.IEnergyStorage;
+import net.neoforged.neoforge.items.ItemStackHandler;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public class GeneratorBE extends BaseContainerBlockEntity {
+    private final ItemStackHandler inv = new ItemStackHandler(1) {
+        @Override
+        public int getSlotLimit(int slot) {
+            return 64;
+        }
+
+        @Override
+        protected void onContentsChanged(int slot) {
+            setChanged();
+        }
+    };
+
     @Getter
     private final Tier tier;
     public double curOutput = 0;
     public double energy = 0;
-    public NonNullList<ItemStack> inv = NonNullList.withSize(1, ItemStack.EMPTY);
 
     @Getter
     private final GeneratorConnection connection;
@@ -46,33 +52,17 @@ public class GeneratorBE extends BaseContainerBlockEntity {
     @Override
     protected void saveAdditional(@NotNull CompoundTag tag, HolderLookup.@NotNull Provider registries) {
         super.saveAdditional(tag, registries);
-
-        ListTag nbtList = new ListTag();
-        int size = getContainerSize();
-        for (int i = 0; i < size; i++) {
-            if (!getItem(i).isEmpty()) {
-                CompoundTag itemTag = new CompoundTag();
-                itemTag.putInt("Slot", i);
-                getItem(i).save(registries, itemTag);
-                nbtList.add(itemTag);
-            }
-        }
-        tag.put("Items", nbtList);
+        tag.putDouble("energy", energy);
+        tag.putDouble("curEnergy", curOutput);
+        tag.put("Items", inv.serializeNBT(registries));
     }
 
     @Override
     protected void loadAdditional(@NotNull CompoundTag tag, HolderLookup.@NotNull Provider registries) {
         super.loadAdditional(tag, registries);
-
-        ListTag nbtList = new ListTag();
-        if (tag.contains("Items", Tag.TAG_COMPOUND)) {
-            ExponentialPower.LOGGER.warn("Upgrading old NBT item tag on save!");
-            nbtList = tag.getCompound("Items").getList("Items", Tag.TAG_COMPOUND);
-        } else if (tag.contains("Items", Tag.TAG_LIST)) {
-            nbtList = tag.getList("Items", Tag.TAG_COMPOUND);
-        } else {
-            return;
-        }
+        energy = tag.getDouble("energy");
+        curOutput = tag.getDouble("curEnergy");
+        inv.deserializeNBT(registries, tag.getCompound("Items"));
     }
 
     public static <T extends BlockEntity> void tick(Level level, BlockPos pos, BlockState state, T t) {
@@ -109,12 +99,11 @@ public class GeneratorBE extends BaseContainerBlockEntity {
 
     @Override
     protected @NotNull NonNullList<ItemStack> getItems() {
-        return this.inv;
+        return NonNullList.of(ItemStack.EMPTY);
     }
 
     @Override
     protected void setItems(@NotNull NonNullList<ItemStack> stacks) {
-        this.inv = stacks;
     }
 
     @Override
@@ -144,7 +133,7 @@ public class GeneratorBE extends BaseContainerBlockEntity {
 
     @Override
     public int getContainerSize() {
-        return inv.size();
+        return inv.getSlots();
     }
 
     @Override
@@ -154,7 +143,7 @@ public class GeneratorBE extends BaseContainerBlockEntity {
 
     @Override
     public @NotNull ItemStack getItem(int slot) {
-        return slot <= getContainerSize() && slot >= 0 ? inv.get(slot) : ItemStack.EMPTY;
+        return slot <= getContainerSize() && slot >= 0 ? inv.getStackInSlot(slot) : ItemStack.EMPTY;
     }
 
     @Override
@@ -185,7 +174,7 @@ public class GeneratorBE extends BaseContainerBlockEntity {
     @Override
     public void setItem(int slot, @NotNull ItemStack stack) {
         if (slot < getContainerSize() && slot >= 0) {
-            inv.set(slot, stack);
+            inv.setStackInSlot(slot, stack);
         }
     }
 
