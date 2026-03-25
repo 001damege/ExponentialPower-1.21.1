@@ -1,6 +1,7 @@
 package damege.exponentialpower.container;
 
 import damege.exponentialpower.entities.baseclasses.GeneratorBE;
+import damege.exponentialpower.setup.Registration;
 import lombok.Getter;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
@@ -22,7 +23,7 @@ public class EnderGeneratorMenu extends AbstractContainerMenu {
     }
 
     public EnderGeneratorMenu(int containerId, Inventory playerInv, GeneratorBE be) {
-        super(null, containerId);
+        super(Registration.ENDER_GENERATOR_MENU.get(), containerId);
         this.blockEntity = be;
 
         this.addSlot(new CustomStackLimitSlot(be.getMaxStack(), be, 0, 80, 35));
