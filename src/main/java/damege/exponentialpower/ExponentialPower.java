@@ -1,5 +1,6 @@
 package damege.exponentialpower;
 
+import damege.exponentialpower.container.EnderGeneratorScreen;
 import damege.exponentialpower.data.DataGenerators;
 import damege.exponentialpower.setup.Registration;
 import net.minecraft.resources.ResourceLocation;
@@ -9,6 +10,7 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
+import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -20,6 +22,7 @@ public class ExponentialPower {
     public ExponentialPower(IEventBus eventBus, ModContainer container) {
         Registration.init(eventBus);
         eventBus.addListener(RegisterCapabilitiesEvent.class, this::registerCapabilities);
+        eventBus.addListener(RegisterMenuScreensEvent.class, this::registerScreens);
         eventBus.addListener(DataGenerators::gatherData);
         container.registerConfig(ModConfig.Type.SERVER, Config.SERVER_CONFIG);
     }
@@ -33,5 +36,9 @@ public class ExponentialPower {
                 (val, ctx) -> val.getConnection());
         event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, Registration.ADV_ENDER_GENERATOR_BE.get(),
                 (val, ctx) -> val.getConnection());
+    }
+
+    private void registerScreens(RegisterMenuScreensEvent event) {
+        event.register(Registration.ENDER_GENERATOR_MENU.get(), EnderGeneratorScreen::new);
     }
 }

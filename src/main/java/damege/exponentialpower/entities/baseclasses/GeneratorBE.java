@@ -1,6 +1,7 @@
 package damege.exponentialpower.entities.baseclasses;
 
 import damege.exponentialpower.Config;
+import damege.exponentialpower.container.EnderGeneratorMenu;
 import damege.exponentialpower.energy.GeneratorConnection;
 import damege.exponentialpower.items.EnderCell;
 import damege.exponentialpower.setup.Registration;
@@ -107,8 +108,8 @@ public class GeneratorBE extends BaseContainerBlockEntity {
     }
 
     @Override
-    protected AbstractContainerMenu createMenu(int containerId, @NotNull Inventory playerInv) {
-        return null;
+    protected @NotNull AbstractContainerMenu createMenu(int containerId, @NotNull Inventory playerInv) {
+        return new EnderGeneratorMenu(containerId, playerInv, this);
     }
 
     private void handleSendingEnergy() {
